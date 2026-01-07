@@ -1,0 +1,4 @@
+pandas
+python_dotenv
+pinecone
+google

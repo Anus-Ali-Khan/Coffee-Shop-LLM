@@ -1,8 +1,8 @@
 pandas
 python_dotenv
+pinecone
 google
 mlxtend
 firebase-admin
 google-cloud-storage
 cloudinary
-pinecone
