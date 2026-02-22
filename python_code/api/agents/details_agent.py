@@ -34,9 +34,9 @@ class DetailsAgent():
         messages = deepcopy(messages)
 
         user_message = messages[-1]['content']
-        embeddings = get_embeddings(user_message)[0]
+        embeddings = get_embeddings(user_message)
         result = self.get_closest_results(self.index_name,embeddings)
-        source_knowledge = "\n".join([x['metadata']['text'].strip() for x in result])
+        source_knowledge = "\n".join([x['metadata']['text'].strip() for x in result['matches']])
 
         prompt = f"""
         Using the contexts below answer the query:
@@ -51,3 +51,17 @@ class DetailsAgent():
 
         messages[-1]['content'] = prompt
         input_messages = [{"role":"model", "content":system_prompt}] + messages[-3:]
+
+        chatbot_output = get_chatbot_response(self.client,self.model_name,input_messages)
+        output = self.postprocess(chatbot_output)
+        return output
+    
+    def postprocess(self,output):
+        output = {
+            "role":"model",
+            "content":output,
+            "memory":{
+                "agent":"details_agent"
+            }       
+            }
+        return output

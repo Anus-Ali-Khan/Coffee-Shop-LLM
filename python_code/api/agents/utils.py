@@ -34,7 +34,7 @@ def cleaned_response(response):
 
 # Generate embeddings
 def get_embeddings(text_input):
-    output = model.encode(text_input)
+    output = model.encode(text_input).tolist()
 
     embeddings = []
     for embeddings_object in output:
