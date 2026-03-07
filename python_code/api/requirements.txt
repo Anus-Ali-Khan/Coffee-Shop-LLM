@@ -1,4 +1,5 @@
 pandas
 python_dotenv
 pinecone
-google
+google-genai
+sentence-transformers
