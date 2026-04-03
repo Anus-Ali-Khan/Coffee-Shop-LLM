@@ -1,6 +1,5 @@
-from agents import GuardAgent,ClassificationAgent,DetailsAgent,AgentProtocol,RecommendationAgent
+from agents import GuardAgent,ClassificationAgent,DetailsAgent,AgentProtocol,RecommendationAgent,OrderTakingAgent
 import os
-import sys
 import pathlib
 folder_path = pathlib.Path(__file__).parent.resolve()
 
@@ -9,17 +8,6 @@ folder_path = pathlib.Path(__file__).parent.resolve()
 
 
 def main():
-    pass
-
-if __name__ == "__main__":
-
-    # recommendation_agent = RecommendationAgent(
-    #     os.path.join(folder_path, 'recommendation_objects/apriori_recommendations.json'),
-    #     os.path.join(folder_path, 'recommendation_objects/popularity_recommendation.csv')
-    # ) 
-
-    # print(recommendation_agent.get_apriori_recommendation(['Latte']))
-    
     guard_agent = GuardAgent()
     classification_agent = ClassificationAgent()
 
@@ -28,12 +16,14 @@ if __name__ == "__main__":
         "recommendation_agent" :  RecommendationAgent(
         os.path.join(folder_path, 'recommendation_objects/apriori_recommendations.json'),
         os.path.join(folder_path, 'recommendation_objects/popularity_recommendation.csv')
-    ) 
+    ),
+        "order_taking_agent" : OrderTakingAgent() 
     }
 
     messages = []
     while True:
-        # os.system('cls' if os.name == 'nt' else 'clear')
+        # Flush output
+        os.system('cls' if os.name == 'nt' else 'clear')
 
         print("\n\n Print Messages ........")
         for message in messages:
@@ -53,13 +43,21 @@ if __name__ == "__main__":
         # Get Classification Agent's Response
         classification_agent_response = classification_agent.get_response(messages)
         chosen_agent = classification_agent_response["memory"]["classification_decision"]
-        print("Chosen Agent: ", chosen_agent)
+        # print("Chosen Agent: ", chosen_agent)
 
 
         # Get the chosen agents's reponse
         agent = agent_dict[chosen_agent]
         response = agent.get_response(messages)
+        k
 
         messages.append(response)
+
+if __name__ == "__main__":
+    main()
+
+   
+    
+   
          
 

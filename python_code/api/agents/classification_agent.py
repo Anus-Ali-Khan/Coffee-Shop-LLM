@@ -2,7 +2,7 @@ from google import genai
 import os
 import json
 from copy import deepcopy
-from .utils import get_chatbot_response,cleaned_response
+from .utils import get_chatbot_response,double_check_json_output
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -34,6 +34,7 @@ class ClassificationAgent():
         input_messages += messages[-3:]
 
         chatbot_output = get_chatbot_response(self.client,self.model_name,input_messages)
+        chatbot_output = double_check_json_output(self.client,self.model_name,chatbot_output)
         output = self.postprocess(chatbot_output)
 
         return output
