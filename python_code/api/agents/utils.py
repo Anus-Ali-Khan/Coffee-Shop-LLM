@@ -61,7 +61,7 @@ def double_check_json_output(client,model_name,json_string):
 
     messages = [{"role":"user","content":prompt}]
     response = get_chatbot_response(client, model_name, messages)
-    response = response.replace("`k","")
+    response = response.replace("`","")
 
     return response
     

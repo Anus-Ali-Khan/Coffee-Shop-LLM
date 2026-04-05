@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class OrderTakingAgent():
-    def __init__(self):
+    def __init__(self,recommendation_agent):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         self.model_name = os.getenv("MODEL_NAME") 
+        self.recommendation_agent = recommendation_agent
 
     def get_response(self,messages):
         messages = deepcopy(messages)
@@ -72,6 +73,7 @@ class OrderTakingAgent():
         """
 
         last_order_taing_status=""
+        asked_recommendation_before=False
         for message_index in range(len(messages)-1,0,-1):
             message = messages[message_index]
             
@@ -79,6 +81,7 @@ class OrderTakingAgent():
             if message["role"] == "model" and agent_name == "order_taking_agent":
                 step_number = message['memory']['step number']
                 order = message['memory']['order']
+                asked_recommendation_before = message['memory']['asked_recommendation_before']
                 last_order_taing_status = f"""
                 step number: {step_number}
                 order: {order}
@@ -90,25 +93,30 @@ class OrderTakingAgent():
         # double check json
         chatbot_output = double_check_json_output(self.client,self.model_name,chatbot_output)
 
-        output = self.postprocess(chatbot_output)
+        output = self.postprocess(chatbot_output,messages,asked_recommendation_before)
 
         return output
     
-    def postprocess(self,output):
+    def postprocess(self,output,messages,asked_recommendation_before):
         output = json.loads(output)
 
         if type(output["order"]) == str:
             output["order"] = json.loads(output["order"])
 
         response= output["response"]
+        if not asked_recommendation_before and len(output["order"])>0:
+            recommendation_ouput = self.recommendation_agent.get_recommendations_from_order(messages,output["order"])
+            response = recommendation_ouput["content"]
+            asked_recommendation_before = True
 
         dict_output = {
             "role":"model",
             "content":response,
             "memory":{
                 "agent":"order_taking_agent",
-                "step number":output["step number"],
-                "order":output["order"]
+                "step number":output["step number"],             
+                "asked_recommendation_before":asked_recommendation_before,
+                "order":output["order"],
             }
         }
         return dict_output
